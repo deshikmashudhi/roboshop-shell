@@ -1,4 +1,3 @@
-vim /etc/systemd/system/catalogue.service
 [Unit]
 Description = Catalogue Service
 
@@ -8,3 +7,6 @@ Environment=MONGO=true
 Environment=MONGO_URL="mongodb://mangodb.roboshop.com:27017/catalogue"
 ExecStart=/bin/node /app/server.js
 SyslogIdentifier=catalogue
+
+[Install]
+WantedBy=multi-user.target
