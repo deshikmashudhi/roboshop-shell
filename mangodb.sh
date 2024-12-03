@@ -25,26 +25,26 @@ VALIDATE(){
      
 }
 
-cp mangodb.repo /etc/yum.repos.d/mongo.repo &>> $LOGFILE
+cp mongodb.repo /etc/yum.repos.d/mongo.repo &>> $LOGFILE
 
 validate $? "copied mango repo to yum.repos.d"
 
-apt install mangodb-org -y &>> $LOGFILE
+apt install mongo-org -y &>> $LOGFILE
 
-validate $? "installed mangodb"
+validate $? "installed mongo"
 
-systemtcl enable mangodb &>> $LOGFILE
+systemtcl enable mongo &>> $LOGFILE
 
-validate $? "enabled mangodb"
+validate $? "enabled mongo"
 
 systemctl start mangod &>> $LOGFILE
 
-validate $? "started mangodb"
+validate $? "started mongo"
 
-sed -i 's/127.0.0.1/0.0.0.0/' /etc/mangodb.conf &>> $LOGFILE
+sed -i 's/127.0.0.1/0.0.0.0/' /etc/mongo.conf &>> $LOGFILE
 
-validate $? "edited mangodb conf"
+validate $? "edited mongo conf"
 
-systemctl restart mangodb &>> $LOGFILE
+systemctl restart mongo &>> $LOGFILE
 
-validate $? "Restarting mangodb"
+validate $? "Restarting mongo"
