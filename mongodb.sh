@@ -1,65 +1,50 @@
 #!/bin/bash
+R="\e[31m"
+G="\e[32m"
+Y="\e[33m"
+N="\e[0m"
 
 DATE=$(date +%F)
 LOGSDIR=/tmp
 SCRIPT_NAME=$0
-LOGFILE=$LOGSDIR/$(basename $SCRIPT_NAME)-$DATE.log
+LOGFILE=$LOGSDIR/$SCRIPT_NAME-$DATE.log #to get logs regarding the format
 USERID=$(id -u)
-R="\e[31m"
-G="\e[32m"
-N="\e[0m"
-Y="\e[33m"
-
-# Check if the script is run with root privileges
-if [ $USERID -ne 0 ]; then
-    echo -e "$R ERROR:: Please run this script with root access $N"
-    exit 1
+if [ $USERID -ne 0 ];
+then
+   echo -e "$R Error: please user root access $N"
+   exit 1
 fi
-
-# Validate function
 VALIDATE(){
-    if [ $1 -ne 0 ]; then
-        echo -e "$2 ... $R FAILURE $N"
-        exit 1
+    if [ $1 -ne 0 ];
+    then
+      echo -e "$2..$R faailure $N"
+      exit 1
     else
-        echo -e "$2 ... $G SUCCESS $N"
+       echo -e "$2..$G success $N"
     fi
+     
 }
 
-# Step 1: Update the package list
-sudo yum update -y &>> $LOGFILE
-VALIDATE $? "Updated package list"
+cp mongo.repo /etc/yum.repos.d/mongo.repo &>> $LOGFILE
 
-# Step 2: Add MongoDB 4.2 repository (for Ubuntu)
-echo "deb [arch=amd64] https://repo.mongodb.org/yum/ubuntu focal/mongodb-org/4.2 multiverse" | sudo tee /etc/yum/sources.list.d/mongodb-org-4.2.list &>> $LOGFILE
-VALIDATE $? "Added MongoDB 4.2 repository"
+validate $? "copied mango repo to yum.repos.d"
 
-# Step 3: Import MongoDB public key (if not already done)
-wget -qO - https://www.mongodb.org/static/pgp/server-4.2.asc | sudo yum-key add - &>> $LOGFILE
-VALIDATE $? "Imported MongoDB public key"
+yum install mongodb-org -y &>> $LOGFILE
 
-# Step 4: Update the package list again after adding the repository
-sudo yum update -y &>> $LOGFILE
-VALIDATE $? "Updated package list after adding MongoDB repository"
+validate $? "installed mongo"
 
-# Step 5: Install MongoDB
-sudo yum install -y mongodb-org &>> $LOGFILE
-VALIDATE $? "Installed MongoDB"
+systemtcl enable mongodb &>> $LOGFILE
 
-# Step 6: Enable MongoDB service to start on boot
-systemctl enable mongod &>> $LOGFILE
-VALIDATE $? "Enabled MongoDB service"
+validate $? "enabled mongo"
 
-# Step 7: Start MongoDB service
-systemctl start mongod &>> $LOGFILE
-VALIDATE $? "Started MongoDB service"
+systemctl start mangod &>> $LOGFILE
 
-# Step 8: Allow external connections by editing the MongoDB configuration
+validate $? "started mongo"
+
 sed -i 's/127.0.0.1/0.0.0.0/' /etc/mongod.conf &>> $LOGFILE
-VALIDATE $? "Edited MongoDB configuration"
 
-# Step 9: Restart MongoDB to apply configuration changes
+validate $? "edited mongo conf"
+
 systemctl restart mongod &>> $LOGFILE
-VALIDATE $? "Restarted MongoDB"
 
-echo "MongoDB 4.2 installation and configuration completed successfully!"
+validate $? "Restarting mongo"
