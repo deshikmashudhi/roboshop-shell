@@ -2,24 +2,23 @@
 
 DATE=$(date +%F)
 LOGSDIR=/tmp
-# /home/centos/shellscript-logs/script-name-date.log
 SCRIPT_NAME=$0
-LOGFILE=$LOGSDIR/$0-$DATE.log
+LOGFILE=$LOGSDIR/$(basename $SCRIPT_NAME)-$DATE.log
 USERID=$(id -u)
 R="\e[31m"
 G="\e[32m"
 N="\e[0m"
 Y="\e[33m"
 
-if [ $USERID -ne 0 ];
-then
+# Check if the script is run with root privileges
+if [ $USERID -ne 0 ]; then
     echo -e "$R ERROR:: Please run this script with root access $N"
     exit 1
 fi
 
+# Validate function
 VALIDATE(){
-    if [ $1 -ne 0 ];
-    then
+    if [ $1 -ne 0 ]; then
         echo -e "$2 ... $R FAILURE $N"
         exit 1
     else
@@ -27,41 +26,40 @@ VALIDATE(){
     fi
 }
 
+# Step 1: Update the package list
 sudo apt update -y &>> $LOGFILE
-VALIDATE $? "updated"
-# sudo apt install -y wget gnupg &>> $LOGFILE
-# validate $? "installed required dependnecies"
+VALIDATE $? "Updated package list"
 
-# wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add - &>> $LOGFILE
-# validate $? "imported pub key"
+# Step 2: Add MongoDB 4.2 repository (for Ubuntu)
+echo "deb [arch=amd64] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.2.list &>> $LOGFILE
+VALIDATE $? "Added MongoDB 4.2 repository"
 
-# echo "deb [arch=amd64] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list &>> $LOGFILE
-# validate $? "done"
+# Step 3: Import MongoDB public key (if not already done)
+wget -qO - https://www.mongodb.org/static/pgp/server-4.2.asc | sudo apt-key add - &>> $LOGFILE
+VALIDATE $? "Imported MongoDB public key"
 
+# Step 4: Update the package list again after adding the repository
 sudo apt update -y &>> $LOGFILE
-validate $? "done"
+VALIDATE $? "Updated package list after adding MongoDB repository"
 
-cp mongo.repo /etc/yum.repos.d/mongo.repo &>> $LOGFILE
+# Step 5: Install MongoDB
+sudo apt install -y mongodb-org &>> $LOGFILE
+VALIDATE $? "Installed MongoDB"
 
-VALIDATE $? "Copied MongoDB repo into yum.repos.d"
-
-apt install mongodb-org -y &>> $LOGFILE
-
-
-VALIDATE $? "Installation of MongoDB"
-
+# Step 6: Enable MongoDB service to start on boot
 systemctl enable mongod &>> $LOGFILE
+VALIDATE $? "Enabled MongoDB service"
 
-VALIDATE $? "Enabling MongoDB"
-
+# Step 7: Start MongoDB service
 systemctl start mongod &>> $LOGFILE
+VALIDATE $? "Started MongoDB service"
 
-VALIDATE $? "Starting MongoDB"
-
+# Step 8: Allow external connections by editing the MongoDB configuration
 sed -i 's/127.0.0.1/0.0.0.0/' /etc/mongod.conf &>> $LOGFILE
+VALIDATE $? "Edited MongoDB configuration"
 
-VALIDATE $? "Edited MongoDB conf"
-
+# Step 9: Restart MongoDB to apply configuration changes
 systemctl restart mongod &>> $LOGFILE
+VALIDATE $? "Restarted MongoDB"
 
-VALIDATE $? "Restarting MonogoDB"
+echo "MongoDB 4.2 installation and configuration completed successfully!"
