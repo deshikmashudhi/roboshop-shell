@@ -6,8 +6,8 @@ N="\e[0m"
 
 DATE=$(date +%F)
 LOGSDIR=/tmp
-LOGFILE=$LOGSDIR/$SCRIPT_NAME-$DATE.log #to get logs regarding the format
 SCRIPT_NAME=$0
+LOGFILE=$LOGSDIR/$SCRIPT_NAME-$DATE.log #to get logs regarding the format
 USERID=$(id -u)
 if [ $USERID -ne 0 ];
 then
@@ -25,15 +25,15 @@ VALIDATE(){
      
 }
 
-cp mongodb.repo /etc/yum.repos.d/mongo.repo &>> $LOGFILE
+cp mongo.repo /etc/yum.repos.d/mongo.repo &>> $LOGFILE
 
 validate $? "copied mango repo to yum.repos.d"
 
-apt install mongo-org -y &>> $LOGFILE
+yum install mongodb-org -y &>> $LOGFILE
 
 validate $? "installed mongo"
 
-systemtcl enable mongo &>> $LOGFILE
+systemtcl enable mongodb &>> $LOGFILE
 
 validate $? "enabled mongo"
 
@@ -41,10 +41,10 @@ systemctl start mangod &>> $LOGFILE
 
 validate $? "started mongo"
 
-sed -i 's/127.0.0.1/0.0.0.0/' /etc/mongo.conf &>> $LOGFILE
+sed -i 's/127.0.0.1/0.0.0.0/' /etc/mongod.conf &>> $LOGFILE
 
 validate $? "edited mongo conf"
 
-systemctl restart mongo &>> $LOGFILE
+systemctl restart mongod &>> $LOGFILE
 
 validate $? "Restarting mongo"
