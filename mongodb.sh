@@ -27,12 +27,25 @@ VALIDATE(){
     fi
 }
 
+sudo apt update -y
+VALIDATE $? "updated"
+sudo apt install -y wget gnupg
+validate $? "installed required dependnecies"
+
+wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
+validate $? "imported pub key"
+
+echo "deb [arch=amd64] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+validate $? "done"
+sudo apt update -y
+validate $? "done"
 
 cp mongo.repo /etc/yum.repos.d/mongo.repo &>> $LOGFILE
 
 VALIDATE $? "Copied MongoDB repo into yum.repos.d"
 
-yum install mongodb-org -y &>> $LOGFILE
+apt install mongodb-org -y &>> $LOGFILE
+
 
 VALIDATE $? "Installation of MongoDB"
 
