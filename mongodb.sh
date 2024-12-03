@@ -29,7 +29,7 @@ cp mongo.repo /etc/yum.repos.d/mongo.repo &>> $LOGFILE
 
 validate $? "copied mango repo to yum.repos.d"
 
-yum install mongodb-org -y &>> $LOGFILE
+apt install mongodb-org -y &>> $LOGFILE
 
 validate $? "installed mongo"
 

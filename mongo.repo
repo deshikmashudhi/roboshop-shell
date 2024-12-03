@@ -1,5 +1,11 @@
+# [mongodb-org-4.2]
+# name=MongoDB Repository
+# baseurl=https://repo.mongodb.org/apt/redhat/$releasever/mongodb-org/4.2/x86_64/
+# gpgcheck=0
+# enabled=1
+
 [mongodb-org-4.2]
 name=MongoDB Repository
-baseurl=https://repo.mongodb.org/apt/redhat/$releasever/mongodb-org/4.2/x86_64/
-gpgcheck=0
+baseurl=https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.2 multiverse
+gpgcheck=1
 enabled=1
