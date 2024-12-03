@@ -29,14 +29,14 @@ VALIDATE(){
 
 sudo apt update -y &>> $LOGFILE
 VALIDATE $? "updated"
-sudo apt install -y wget gnupg &>> $LOGFILE
-validate $? "installed required dependnecies"
+# sudo apt install -y wget gnupg &>> $LOGFILE
+# validate $? "installed required dependnecies"
 
-wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add - &>> $LOGFILE
-validate $? "imported pub key"
+# wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add - &>> $LOGFILE
+# validate $? "imported pub key"
 
-echo "deb [arch=amd64] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list &>> $LOGFILE
-validate $? "done"
+# echo "deb [arch=amd64] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list &>> $LOGFILE
+# validate $? "done"
 
 sudo apt update -y &>> $LOGFILE
 validate $? "done"
