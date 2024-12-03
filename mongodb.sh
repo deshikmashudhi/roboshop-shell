@@ -27,23 +27,23 @@ VALIDATE(){
 }
 
 # Step 1: Update the package list
-sudo apt update -y &>> $LOGFILE
+sudo yum update -y &>> $LOGFILE
 VALIDATE $? "Updated package list"
 
 # Step 2: Add MongoDB 4.2 repository (for Ubuntu)
-echo "deb [arch=amd64] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.2.list &>> $LOGFILE
+echo "deb [arch=amd64] https://repo.mongodb.org/yum/ubuntu focal/mongodb-org/4.2 multiverse" | sudo tee /etc/yum/sources.list.d/mongodb-org-4.2.list &>> $LOGFILE
 VALIDATE $? "Added MongoDB 4.2 repository"
 
 # Step 3: Import MongoDB public key (if not already done)
-wget -qO - https://www.mongodb.org/static/pgp/server-4.2.asc | sudo apt-key add - &>> $LOGFILE
+wget -qO - https://www.mongodb.org/static/pgp/server-4.2.asc | sudo yum-key add - &>> $LOGFILE
 VALIDATE $? "Imported MongoDB public key"
 
 # Step 4: Update the package list again after adding the repository
-sudo apt update -y &>> $LOGFILE
+sudo yum update -y &>> $LOGFILE
 VALIDATE $? "Updated package list after adding MongoDB repository"
 
 # Step 5: Install MongoDB
-sudo apt install -y mongodb-org &>> $LOGFILE
+sudo yum install -y mongodb-org &>> $LOGFILE
 VALIDATE $? "Installed MongoDB"
 
 # Step 6: Enable MongoDB service to start on boot
