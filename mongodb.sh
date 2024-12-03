@@ -33,7 +33,7 @@ apt install mongodb-org -y &>> $LOGFILE
 
 validate $? "installed mongo"
 
-systemtcl enable mongodb &>> $LOGFILE
+systemtcl enable mongod &>> $LOGFILE
 
 validate $? "enabled mongo"
 
