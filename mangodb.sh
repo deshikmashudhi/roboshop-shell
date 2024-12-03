@@ -29,22 +29,22 @@ cp mangodb.repo /etc/yum.repos.d/mongo.repo &>> $LOGFILE
 
 validate $? "copied mango repo to yum.repos.d"
 
-yum install mangodb-org -y &>> $LOGFILE
+apt install mangodb-org -y &>> $LOGFILE
 
 validate $? "installed mangodb"
 
-systemtcl enable mangodb
+systemtcl enable mangodb &>> $LOGFILE
 
 validate $? "enabled mangodb"
 
-systemctl start mangod 
+systemctl start mangod &>> $LOGFILE
 
 validate $? "started mangodb"
 
-sed -i 's/127.0.0.1/0.0.0.0/' /etc/mangodb.conf
+sed -i 's/127.0.0.1/0.0.0.0/' /etc/mangodb.conf &>> $LOGFILE
 
 validate $? "edited mangodb conf"
 
-systemctl restart mangodb
+systemctl restart mangodb &>> $LOGFILE
 
 validate $? "Restarting mangodb"
